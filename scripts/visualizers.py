@@ -1,14 +1,20 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+from collections import Counter
+import re
 
-def plot_sentiment_analysis(data, sentiment_column):
+def plot_sentiment_analysis(data, sentiment_column, sample_size=None):
     """
     Plots a bar chart for sentiment analysis distribution.
 
     :param data: DataFrame containing the sentiment data
     :param sentiment_column: Name of the column with sentiment values
+    :param sample_size: Number of random samples to process (default is None to process all)
     """
+    if sample_size is not None:
+        data = data.sample(n=sample_size, random_state=1)  # Random sampling
+
     plt.figure(figsize=(8, 6))
     data[sentiment_column].value_counts().plot(kind='bar', color=['green', 'gray', 'red'])
     plt.title('Sentiment Analysis Distribution')
@@ -16,17 +22,56 @@ def plot_sentiment_analysis(data, sentiment_column):
     plt.ylabel('Frequency')
     plt.show()
 
-def plot_time_series(data, date_col):
+def plot_word_cloud(data, text_column, sample_size=None):
+    """
+    Plots a word cloud for the most frequent keywords in a text column.
+
+    :param data: DataFrame containing the text data
+    :param text_column: Name of the column containing text
+    :param sample_size: Number of random samples to process (default is None to process all)
+    """
+    if sample_size is not None:
+        data = data.sample(n=sample_size, random_state=1)  # Random sampling
+
+    if text_column not in data.columns:
+        raise ValueError(f"Column '{text_column}' does not exist in the DataFrame.")
+
+    if data[text_column].empty:
+        raise ValueError("The provided text column is empty.")
+
+    text = " ".join(data[text_column].dropna())  # Handle NaN values
+    cleaned_text = re.sub(r'[^A-Za-z0-9\s]', '', text).lower()
+
+    # Count the frequency of each word
+    word_counts = Counter(cleaned_text.split())
+
+    # Get the top 5 words
+    top_5_words = dict(word_counts.most_common(5))
+    print(f"Top 5 words: {top_5_words}")
+
+    # Generate word cloud
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(top_5_words)
+
+    plt.figure(figsize=(12, 6))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title('Top 5 Frequent Keywords in Headlines')
+    plt.show()
+
+def plot_time_series(data, date_col, sample_size=None):
     """
     Plots a time series analysis of publication frequency over time.
 
     :param data: DataFrame containing the date data
     :param date_column: Date
+    :param sample_size: Number of random samples to process (default is None to process all)
     """
+    if sample_size is not None:
+        data = data.sample(n=sample_size, random_state=1)  # Random sampling
+
     plt.figure(figsize=(10, 6))
     data[date_col] = pd.to_datetime(data[date_col], errors='coerce')
     data.dropna(subset=[date_col], inplace=True)
-    #data.groupby(date_column).size().plot(kind='line')
     data['month'] = data[date_col].dt.to_period('M')
     monthly_counts = data.groupby('month').size()
     monthly_counts.plot(kind='line')
@@ -36,14 +81,18 @@ def plot_time_series(data, date_col):
     plt.grid()
     plt.show()
 
-def plot_publisher_contribution(data, publisher_column, top_n=5):
+def plot_publisher_contribution(data, publisher_column, top_n=5, sample_size=None):
     """
     Plots a bar chart for the top N publishers by article count.
 
     :param data: DataFrame containing the publisher data
-    :param publisher_column: publisher
+    :param publisher_column: Publisher column name
     :param top_n: Number of top publishers to display
+    :param sample_size: Number of random samples to process (default is None to process all)
     """
+    if sample_size is not None:
+        data = data.sample(n=sample_size, random_state=1)  # Random sampling
+
     plt.figure(figsize=(10, 6))
     top_publishers = data[publisher_column].value_counts().head(top_n)
     top_publishers.plot(kind='bar', color='skyblue')
@@ -52,31 +101,17 @@ def plot_publisher_contribution(data, publisher_column, top_n=5):
     plt.ylabel('Number of Articles')
     plt.show()
 
-def plot_word_cloud(data, text_column):
-    """
-    Plots a word cloud for the most frequent keywords in a text column.
-
-    :param data: DataFrame containing the text data
-    :param text_column: Headline
-    """
-    text = " ".join(data[text_column])
-    cleaned_text = re.sub(r'[A-Za-z0-9\s]', '', text).lower()
-    word_counts = Counter(cleaned_text.split())
-    top_5_words = dict(word_counts.most_common(5))
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
-    plt.figure(figsize=(12, 6))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis('off')
-    plt.title('Top 5 Frequent Keywords in Headlines')
-    plt.show()
-
-def plot_stock_article_count(data, stock_column):
+def plot_stock_article_count(data, stock_column, sample_size=None):
     """
     Plots the number of articles for each stock.
 
     :param data: DataFrame containing the stock data
     :param stock_column: Name of the column with stock names
+    :param sample_size: Number of random samples to process (default is None to process all)
     """
+    if sample_size is not None:
+        data = data.sample(n=sample_size, random_state=1)  # Random sampling
+
     plt.figure(figsize=(10, 6))
     stock_counts = data[stock_column].value_counts()
     stock_counts.plot(kind='bar', color='lightblue')
@@ -85,7 +120,7 @@ def plot_stock_article_count(data, stock_column):
     plt.ylabel('Number of Articles')
     plt.show()
 
-def plot_word_cloud_top_stocks(data, text_column, stock_column, top_n=5):
+def plot_word_cloud_top_stocks(data, text_column, stock_column, top_n=5, sample_size=None):
     """
     Plots word clouds for the top N stocks by article count.
 
@@ -93,7 +128,11 @@ def plot_word_cloud_top_stocks(data, text_column, stock_column, top_n=5):
     :param text_column: Name of the column with text data
     :param stock_column: Name of the column with stock names
     :param top_n: Number of top stocks to visualize
+    :param sample_size: Number of random samples to process (default is None to process all)
     """
+    if sample_size is not None:
+        data = data.sample(n=sample_size, random_state=1)  # Random sampling
+
     top_stocks = data[stock_column].value_counts().head(top_n).index
     for stock in top_stocks:
         stock_data = data[data[stock_column] == stock]
