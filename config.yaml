@@ -1,3 +1,2 @@
 dataset_path: "C:\\Users\\user\\Documents\\My Projects\\New folder\\raw_analyst_ratings.csv"
-#dataset_path2: "C:\\Users\\user\\Documents\\My Projects\\New folder"
 date_column: "date"
