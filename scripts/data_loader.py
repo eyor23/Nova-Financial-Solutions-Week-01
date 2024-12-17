@@ -1,5 +1,6 @@
 import pandas as pd
 import yaml
+import os
 
 def load_config(config_file='../config.yaml'):
     """
@@ -38,3 +39,16 @@ def handle_missing_values(data):
     data_cleaned = data.dropna()
     print(f"Dataset after dropping missing values: {data_cleaned.shape[0]} rows.")
     return data_cleaned
+
+def load_stock_data(data_path):
+    print("Loading stock data...")  # Debugging line
+    stock_data = {}
+
+    # List all Excel files in the directory
+    for file_name in os.listdir(data_path):
+        if file_name.endswith('.xlsx'):
+            stock_name = file_name.split('.')[0]  # Extract stock name from file
+            file_path = os.path.join(data_path, file_name)
+            stock_data[stock_name] = pd.read_excel(file_path)  # Load Excel file into DataFrame
+
+    return stock_data

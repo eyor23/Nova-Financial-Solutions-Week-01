@@ -144,3 +144,37 @@ def plot_word_cloud_top_stocks(data, text_column, stock_column, top_n=5, sample_
         plt.axis('off')
         plt.title(f'Frequent Keywords in Headlines for {stock}')
         plt.show()
+
+import matplotlib.pyplot as plt
+
+def plot_technical_indicators(df, stock_name):
+    """
+    Plot stock data with technical indicators.
+
+    :param df: DataFrame containing stock data with indicators
+    :param stock_name: Name of the stock
+    """
+    plt.figure(figsize=(14, 8))
+    plt.plot(df['Date'], df['Close'], label='Close Price', color='blue')
+    plt.plot(df['Date'], df['SMA_20'], label='SMA 20', color='orange')
+    plt.title(f'{stock_name} - Technical Indicators')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.legend()
+    plt.show()
+
+def plot_financial_metrics(metrics, stock_name):
+    """
+    Plot financial metrics such as daily and cumulative returns.
+
+    :param metrics: Dictionary of financial metrics
+    :param stock_name: Name of the stock
+    """
+    plt.figure(figsize=(14, 8))
+    plt.plot(metrics['daily_return'], label='Daily Returns', color='green')
+    plt.plot(metrics['cumulative_return'], label='Cumulative Returns', color='red')
+    plt.title(f'{stock_name} - Financial Metrics')
+    plt.xlabel('Date')
+    plt.ylabel('Return')
+    plt.legend()
+    plt.show()
