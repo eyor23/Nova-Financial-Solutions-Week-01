@@ -2,6 +2,7 @@ import pandas as pd
 import yaml
 import os
 
+
 def load_config(config_file='../config.yaml'):
     """
     Load configuration from a YAML file.
@@ -40,15 +41,34 @@ def handle_missing_values(data):
     print(f"Dataset after dropping missing values: {data_cleaned.shape[0]} rows.")
     return data_cleaned
 
-def load_stock_data(data_path):
-    print("Loading stock data...")  # Debugging line
+def load_stock_data(file_paths):
+    """
+    Load multiple stock data files from a list of file paths.
+    """
     stock_data = {}
 
-    # List all Excel files in the directory
-    for file_name in os.listdir(data_path):
-        if file_name.endswith('.xlsx'):
-            stock_name = file_name.split('.')[0]  # Extract stock name from file
-            file_path = os.path.join(data_path, file_name)
-            stock_data[stock_name] = pd.read_excel(file_path)  # Load Excel file into DataFrame
+    for file_path in file_paths:
+        try:
+            data = pd.read_csv(file_path)
+            stock_name = file_path.split('/')[-1].split('_')[0]  # Extract stock name from the file path
+            stock_data[stock_name] = data
+            print(f"Loaded data for {stock_name} from {file_path} with {data.shape[0]} rows and {data.shape[1]} columns.")
+        except Exception as e:
+            print(f"Error loading {file_path}: {e}")
 
     return stock_data
+
+import yfinance as yf
+import pandas as pd
+
+def load_stock_data(ticker, start_date, end_date):
+    """
+    Load historical stock data for a specific ticker.
+    :param ticker: Stock ticker symbol (e.g., 'AAPL' for Apple)
+    :param start_date: Start date in 'YYYY-MM-DD' format
+    :param end_date: End date in 'YYYY-MM-DD' format
+    :return: DataFrame containing stock price data
+    """
+    data = yf.download(ticker, start=start_date, end=end_date)
+    data.reset_index(inplace=True)
+    return data
