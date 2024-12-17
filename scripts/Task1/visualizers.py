@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from collections import Counter
 import re
+import pynance
+import talib
 
 def plot_sentiment_analysis(data, sentiment_column, sample_size=None):
     """
@@ -144,3 +146,76 @@ def plot_word_cloud_top_stocks(data, text_column, stock_column, top_n=5, sample_
         plt.axis('off')
         plt.title(f'Frequent Keywords in Headlines for {stock}')
         plt.show()
+
+import matplotlib.pyplot as plt
+
+def plot_technical_indicators(df, stock_name):
+    """
+    Plot stock data with technical indicators.
+
+    :param df: DataFrame containing stock data with indicators
+    :param stock_name: Name of the stock
+    """
+    plt.figure(figsize=(14, 8))
+    plt.plot(df['Date'], df['Close'], label='Close Price', color='blue')
+    plt.plot(df['Date'], df['SMA_20'], label='SMA 20', color='orange')
+    plt.title(f'{stock_name} - Technical Indicators')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.legend()
+    plt.show()
+
+def plot_financial_metrics(metrics, stock_name):
+    """
+    Plot financial metrics such as daily and cumulative returns.
+
+    :param metrics: Dictionary of financial metrics
+    :param stock_name: Name of the stock
+    """
+    plt.figure(figsize=(14, 8))
+    plt.plot(metrics['daily_return'], label='Daily Returns', color='green')
+    plt.plot(metrics['cumulative_return'], label='Cumulative Returns', color='red')
+    plt.title(f'{stock_name} - Financial Metrics')
+    plt.xlabel('Date')
+    plt.ylabel('Return')
+    plt.legend()
+    plt.show()
+
+import matplotlib.pyplot as plt
+
+def plot_ta_indicators(df):
+    """
+    Plot technical indicators: SMA, RSI, MACD.
+    
+    :param df: DataFrame containing stock data with technical indicators
+    """
+    # Plot SMA and Close Price
+    plt.figure(figsize=(14, 7))
+    plt.plot(df['Date'], df['Close'], label='Close Price', color='blue')
+    plt.plot(df['Date'], df['SMA_20'], label='20-Day SMA', color='orange')
+    plt.title("Close Price and 20-Day SMA")
+    plt.xlabel("Date")
+    plt.ylabel("Price")
+    plt.legend()
+    plt.show()
+
+    # Plot RSI
+    plt.figure(figsize=(14, 5))
+    plt.plot(df['Date'], df['RSI'], label='RSI', color='purple')
+    plt.axhline(70, linestyle='--', color='red', label='Overbought')
+    plt.axhline(30, linestyle='--', color='green', label='Oversold')
+    plt.title("RSI (Relative Strength Index)")
+    plt.xlabel("Date")
+    plt.ylabel("RSI")
+    plt.legend()
+    plt.show()
+
+    # Plot MACD
+    plt.figure(figsize=(14, 7))
+    plt.plot(df['Date'], df['MACD'], label='MACD', color='blue')
+    plt.plot(df['Date'], df['MACD_signal'], label='MACD Signal', color='red')
+    plt.title("MACD and Signal Line")
+    plt.xlabel("Date")
+    plt.ylabel("MACD")
+    plt.legend()
+    plt.show()
